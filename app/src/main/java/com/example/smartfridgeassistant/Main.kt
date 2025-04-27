@@ -2,6 +2,7 @@ package com.example.smartfridgeassistant
 
 import android.app.AlertDialog
 import android.app.DatePickerDialog
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,11 +14,12 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.launch
 import java.util.*
 
-class MainActivity : AppCompatActivity() {
+class Main : AppCompatActivity() {
 
     private lateinit var dao: FoodDao
     private val itemList = mutableListOf<FoodItem>()
@@ -26,7 +28,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.main)
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -35,6 +37,30 @@ class MainActivity : AppCompatActivity() {
         }
         // 初始化 Room DAO
         dao = AppDatabase.getDatabase(this).foodDao()
+
+        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
+
+        bottomNavigationView.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_reminder-> {
+                    val intent = Intent(this, SettingActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+                R.id.nav_stats-> {
+                    val intent = Intent(this, AnalyzeActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+                R.id.nav_search-> {
+                    val intent = Intent(this, SearchMainActivity  ::class.java)
+                    startActivity(intent)
+                    true
+                }
+                else -> false
+            }
+        }
+
 
         // 初始化 RecyclerView
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
