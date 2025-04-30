@@ -68,6 +68,11 @@ class Main : AppCompatActivity() {
             itemList = itemList,
             onItemClick = { foodItem ->
                 showEditDialog(foodItem)
+            },
+            onDeleteItem = { foodItem ->
+                lifecycleScope.launch {
+                    dao.delete(foodItem)
+                }
             }
         )
 

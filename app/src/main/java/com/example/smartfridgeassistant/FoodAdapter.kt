@@ -4,12 +4,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.launch
 
 class FoodAdapter(
-    private val itemList: List<FoodItem>,
+    private val itemList: MutableList<FoodItem>,
     private val onItemClick: (FoodItem) -> Unit,
+    private val onDeleteItem: (FoodItem) -> Unit,
     private var expandedPosition: Int? = null
+
 
 ) : RecyclerView.Adapter<FoodAdapter.FoodViewHolder>() {
 
@@ -63,7 +67,18 @@ class FoodAdapter(
             Toast.makeText(holder.itemView.context, "吃掉功能尚未實作", Toast.LENGTH_SHORT).show()
         }
         holder.btnDelete.setOnClickListener {
-            Toast.makeText(holder.itemView.context, "刪除功能尚未實作", Toast.LENGTH_SHORT).show()
+            val position = holder.adapterPosition
+            if (position != RecyclerView.NO_POSITION) {
+                val item = itemList[position]
+                // 调用删除回调函数
+                onDeleteItem(item)
+                // 从列表中移除项目
+                itemList.removeAt(position)
+                // 通知适配器更新
+                notifyItemRemoved(position)
+                // 通知任何可能的观察者数据已更改
+                notifyItemRangeChanged(position, itemList.size)
+            }
         }
     }
 
