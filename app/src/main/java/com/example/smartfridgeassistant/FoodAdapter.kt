@@ -12,9 +12,9 @@ class FoodAdapter(
     private val itemList: MutableList<FoodItem>,
     private val onItemClick: (FoodItem) -> Unit,
     private val onDeleteItem: (FoodItem) -> Unit,
+    private val onTrashItem: (FoodItem) -> Unit,
+    private val onEatItem: (FoodItem) -> Unit,
     private var expandedPosition: Int? = null
-
-
 ) : RecyclerView.Adapter<FoodAdapter.FoodViewHolder>() {
 
     // ➤ 記錄哪幾個 item 有展開
@@ -61,10 +61,32 @@ class FoodAdapter(
         // 功能按鈕
         holder.btnEdit.setOnClickListener { onItemClick(item) }
         holder.btnTrash.setOnClickListener {
-            Toast.makeText(holder.itemView.context, "廚餘功能尚未實作", Toast.LENGTH_SHORT).show()
+            val position = holder.adapterPosition
+            if (position != RecyclerView.NO_POSITION) {
+                val item = itemList[position]
+                // 调用厨余回调函数
+                onTrashItem(item)
+                // 从列表中移除项目
+                itemList.removeAt(position)
+                // 通知适配器更新
+                notifyItemRemoved(position)
+                // 通知任何可能的观察者数据已更改
+                notifyItemRangeChanged(position, itemList.size)
+            }
         }
         holder.btnEat.setOnClickListener {
-            Toast.makeText(holder.itemView.context, "吃掉功能尚未實作", Toast.LENGTH_SHORT).show()
+            val position = holder.adapterPosition
+            if (position != RecyclerView.NO_POSITION) {
+                val item = itemList[position]
+                // 调用完食回调函数
+                onEatItem(item)
+                // 从列表中移除项目
+                itemList.removeAt(position)
+                // 通知适配器更新
+                notifyItemRemoved(position)
+                // 通知任何可能的观察者数据已更改
+                notifyItemRangeChanged(position, itemList.size)
+            }
         }
         holder.btnDelete.setOnClickListener {
             val position = holder.adapterPosition
@@ -83,4 +105,5 @@ class FoodAdapter(
     }
 
     override fun getItemCount(): Int = itemList.size
+    
 }

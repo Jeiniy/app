@@ -11,3 +11,17 @@ data class FoodItem(
     val expiryDate: String,
     val note: String
 )
+
+@Entity(tableName = "waste_table")
+data class WasteItem(
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    val name: String,
+    val date: String = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault()).format(java.util.Date())
+)
+
+@Entity(tableName = "eaten_table")
+data class EatenItem(
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    val name: String,
+    val date: String = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault()).format(java.util.Date())
+)

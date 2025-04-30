@@ -22,6 +22,8 @@ import java.util.*
 class Main : AppCompatActivity() {
 
     private lateinit var dao: FoodDao
+    private lateinit var wasteDao: WasteDao
+    private lateinit var eatenDao: EatenDao
     private val itemList = mutableListOf<FoodItem>()
     private lateinit var adapter: FoodAdapter
 
@@ -36,7 +38,10 @@ class Main : AppCompatActivity() {
             insets
         }
         // 初始化 Room DAO
-        dao = AppDatabase.getDatabase(this).foodDao()
+        val database = AppDatabase.getDatabase(this)
+        dao = database.foodDao()
+        wasteDao = database.wasteDao()
+        eatenDao = database.eatenDao()
 
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
 
@@ -53,14 +58,13 @@ class Main : AppCompatActivity() {
                     true
                 }
                 R.id.nav_search-> {
-                    val intent = Intent(this, SearchMainActivity  ::class.java)
+                    val intent = Intent(this, SearchMainActivity::class.java)
                     startActivity(intent)
                     true
                 }
                 else -> false
             }
         }
-
 
         // 初始化 RecyclerView
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
@@ -71,6 +75,20 @@ class Main : AppCompatActivity() {
             },
             onDeleteItem = { foodItem ->
                 lifecycleScope.launch {
+                    dao.delete(foodItem)
+                }
+            },
+            onTrashItem = { foodItem ->
+                lifecycleScope.launch {
+                    val wasteItem = WasteItem(name = foodItem.name)
+                    wasteDao.insert(wasteItem)
+                    dao.delete(foodItem)
+                }
+            },
+            onEatItem = { foodItem ->
+                lifecycleScope.launch {
+                    val eatenItem = EatenItem(name = foodItem.name)
+                    eatenDao.insert(eatenItem)
                     dao.delete(foodItem)
                 }
             }
