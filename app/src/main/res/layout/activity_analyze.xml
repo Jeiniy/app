@@ -17,7 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="18dp">
 
             <!-- 第一部分：浪費比例 -->
             <TextView
@@ -34,18 +34,18 @@
                 android:background="#CCCCCC" />
 
             <!-- 圓餅圖 Placeholder（可改成真正的 PieChart 元件） -->
-            <ImageView
+            <com.github.mikephil.charting.charts.PieChart
                 android:id="@+id/pie_chart"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:contentDescription="浪費比例圖"
-                android:scaleType="fitCenter" />
+                android:layout_height="300dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="16dp" />
 
             <!-- 第二部分：已刪除之食品 -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="20dp"
                 android:text="已刪除之食品"
                 android:textSize="18sp"
                 android:textStyle="bold" />

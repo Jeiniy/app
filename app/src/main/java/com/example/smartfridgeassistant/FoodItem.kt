@@ -9,7 +9,8 @@ data class FoodItem(
     val name: String,
     val category: String,
     val expiryDate: String,
-    val note: String
+    val note: String,
+    val type: String
 )
 
 @Entity(tableName = "waste_table")

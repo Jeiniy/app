@@ -13,8 +13,11 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.launch
 import java.util.*
@@ -37,81 +40,61 @@ class Main : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        // 初始化 Room DAO
+
         val database = AppDatabase.getDatabase(this)
         dao = database.foodDao()
         wasteDao = database.wasteDao()
         eatenDao = database.eatenDao()
 
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
-
         bottomNavigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.nav_reminder-> {
-                    val intent = Intent(this, SettingActivity::class.java)
-                    startActivity(intent)
+                R.id.nav_reminder -> {
+                    startActivity(Intent(this, SettingActivity::class.java))
                     true
                 }
-                R.id.nav_stats-> {
-                    val intent = Intent(this, AnalyzeActivity::class.java)
-                    startActivity(intent)
+                R.id.nav_stats -> {
+                    startActivity(Intent(this, AnalyzeActivity::class.java))
                     true
                 }
-                R.id.nav_search-> {
-                    val intent = Intent(this, SearchMainActivity::class.java)
-                    startActivity(intent)
+                R.id.nav_search -> {
+                    startActivity(Intent(this, SearchMainActivity::class.java))
                     true
                 }
                 else -> false
             }
         }
 
-        // 初始化 RecyclerView
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
         adapter = FoodAdapter(
             itemList = itemList,
-            onItemClick = { foodItem ->
-                showEditDialog(foodItem)
-            },
-            onDeleteItem = { foodItem ->
-                lifecycleScope.launch {
-                    dao.delete(foodItem)
-                }
-            },
+            onItemClick = { foodItem -> showEditDialog(foodItem) },
+            onDeleteItem = { foodItem -> lifecycleScope.launch { dao.delete(foodItem); refreshItemList() } },
             onTrashItem = { foodItem ->
                 lifecycleScope.launch {
-                    val wasteItem = WasteItem(name = foodItem.name)
-                    wasteDao.insert(wasteItem)
+                    wasteDao.insert(WasteItem(name = foodItem.name))
                     dao.delete(foodItem)
+                    refreshItemList()
                 }
             },
             onEatItem = { foodItem ->
                 lifecycleScope.launch {
-                    val eatenItem = EatenItem(name = foodItem.name)
-                    eatenDao.insert(eatenItem)
+                    eatenDao.insert(EatenItem(name = foodItem.name))
                     dao.delete(foodItem)
+                    refreshItemList()
                 }
             }
         )
-
+        recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.layoutManager = GridLayoutManager(this, 2)
         recyclerView.adapter = adapter
 
-        // 一進畫面就先讀取所有資料
-        lifecycleScope.launch {
-            itemList.clear()
-            itemList.addAll(dao.getAll())
-            adapter.notifyDataSetChanged()
-        }
-        val sortSpinner = findViewById<Spinner>(R.id.spinner) // 你的排序 Spinner
-
-        // Spinner 選項內容
+        val sortSpinner = findViewById<Spinner>(R.id.spinner)
         val sortOptions = arrayOf("預設", "A~Z", "Z~A", "到期日近到遠", "到期日遠到近")
         val spinnerAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, sortOptions)
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         sortSpinner.adapter = spinnerAdapter
 
-        // 設定排序邏輯
         sortSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 when (position) {
@@ -129,18 +112,27 @@ class Main : AppCompatActivity() {
         val fab = findViewById<FloatingActionButton>(R.id.fab_add)
         fab.setOnClickListener {
             val dialogView = LayoutInflater.from(this).inflate(R.layout.add_item, null)
-            val dialog = AlertDialog.Builder(this)
-                .setView(dialogView)
-                .create()
+            val dialog = AlertDialog.Builder(this).setView(dialogView).create()
 
             val nameEditText = dialogView.findViewById<EditText>(R.id.et_name)
             val categorySpinner = dialogView.findViewById<Spinner>(R.id.spinner_category)
             val dateText = dialogView.findViewById<TextView>(R.id.tv_expiry_date)
             val noteEditText = dialogView.findViewById<EditText>(R.id.et_note)
+            val chipGroup = dialogView.findViewById<ChipGroup>(R.id.chip_group)
             val saveButton = dialogView.findViewById<Button>(R.id.btn_save)
 
             val categoryOptions = arrayOf("冷藏", "冷凍", "常溫")
-            categorySpinner.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, categoryOptions)
+            categorySpinner.adapter = ArrayAdapter(
+                this,
+                android.R.layout.simple_spinner_dropdown_item,
+                categoryOptions
+            )
+
+            var selectedType = ""
+            chipGroup.setOnCheckedChangeListener { group, checkedId ->
+                val chip = group.findViewById<Chip>(checkedId)
+                selectedType = chip?.text?.toString() ?: ""
+            }
 
             dateText.setOnClickListener {
                 val calendar = Calendar.getInstance()
@@ -162,34 +154,26 @@ class Main : AppCompatActivity() {
                 val note = noteEditText.text.toString()
 
                 if (name.isNotBlank() && date.isNotBlank()) {
-                    val newItem = FoodItem(
-                        name = name,
-                        category = category,
-                        expiryDate = date,
-                        note = note
-                    )
-
+                    val newItem = FoodItem(name = name, category = category, expiryDate = date, note = note, type = selectedType)
                     lifecycleScope.launch {
                         dao.insert(newItem)
-                        itemList.clear()
-                        itemList.addAll(dao.getAll())
-                        adapter.notifyDataSetChanged()
+                        refreshItemList()
                     }
-
                     dialog.dismiss()
                 } else {
                     Toast.makeText(this, "請填寫名稱與到期日", Toast.LENGTH_SHORT).show()
                 }
             }
-
             dialog.show()
         }
+
+        // 初始載入列表
+        refreshItemList()
     }
+
     private fun showEditDialog(item: FoodItem) {
         val dialogView = LayoutInflater.from(this).inflate(R.layout.edit_item, null)
-        val dialog = AlertDialog.Builder(this)
-            .setView(dialogView)
-            .create()
+        val dialog = AlertDialog.Builder(this).setView(dialogView).create()
 
         val etName = dialogView.findViewById<EditText>(R.id.et_name)
         val etNote = dialogView.findViewById<EditText>(R.id.et_note)
@@ -197,8 +181,6 @@ class Main : AppCompatActivity() {
         val tvDate = dialogView.findViewById<TextView>(R.id.tv_expiry_date)
         val btnDone = dialogView.findViewById<Button>(R.id.btn_done)
 
-
-        // 填入現有資料
         etName.setText(item.name)
         etNote.setText(item.note)
         tvDate.text = item.expiryDate
@@ -210,9 +192,15 @@ class Main : AppCompatActivity() {
 
         tvDate.setOnClickListener {
             val calendar = Calendar.getInstance()
-            DatePickerDialog(this, { _, year, month, day ->
-                tvDate.text = "$year-${month + 1}-$day"
-            }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show()
+            DatePickerDialog(
+                this,
+                { _, year, month, day ->
+                    tvDate.text = "$year-${month + 1}-$day"
+                },
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH)
+            ).show()
         }
 
         btnDone.setOnClickListener {
@@ -224,14 +212,19 @@ class Main : AppCompatActivity() {
             )
             lifecycleScope.launch {
                 dao.update(newItem)
-                itemList.clear()
-                itemList.addAll(dao.getAll())
-                adapter.notifyDataSetChanged()
+                refreshItemList()
             }
             dialog.dismiss()
         }
-
         dialog.show()
     }
 
+    private fun refreshItemList() {
+        lifecycleScope.launch {
+            val data = dao.getAll()
+            itemList.clear()
+            itemList.addAll(data)
+            adapter.notifyDataSetChanged()
+        }
+    }
 }

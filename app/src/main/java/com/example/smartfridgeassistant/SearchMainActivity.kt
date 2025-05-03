@@ -6,6 +6,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.EditText
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finalproject.Food
@@ -18,7 +20,7 @@ class SearchMainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.search_activity_main)
+        setContentView(R.layout.activity_search)
 
         // 假資料（之後可以改成從資料庫取出）
         foodList = listOf(
@@ -28,6 +30,17 @@ class SearchMainActivity : AppCompatActivity() {
             Food("milk", "2025/04/27"),
             Food("chocolate cake", "2025/04/28")
         )
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.setPadding(
+                view.paddingLeft,
+                systemBars.top,   // ✅ 增加上方邊距，避開狀態列
+                view.paddingRight,
+                view.paddingBottom
+            )
+            insets
+        }
 
         // 初始化元件
         val searchInput = findViewById<EditText>(R.id.search_input)
