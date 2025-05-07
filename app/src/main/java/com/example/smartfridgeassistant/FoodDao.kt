@@ -18,23 +18,28 @@ interface FoodDao {
 
     @Update
     suspend fun update(item: FoodItem)
+}
 
-    }
+@Dao
+interface WasteDao {
+    @Insert
+    suspend fun insert(item: WasteItem)
 
-    @Dao
-    interface WasteDao {
-        @Insert
-        suspend fun insert(item: WasteItem)
+    @Query("SELECT * FROM waste_table")
+    suspend fun getAll(): List<WasteItem>
+    
+    @Delete
+    suspend fun delete(item: WasteItem)
+}
 
-        @Query("SELECT * FROM waste_table")
-        suspend fun getAll(): List<WasteItem>
-    }
+@Dao
+interface EatenDao {
+    @Insert
+    suspend fun insert(item: EatenItem)
 
-    @Dao
-    interface EatenDao {
-        @Insert
-        suspend fun insert(item: EatenItem)
-
-        @Query("SELECT * FROM eaten_table")
-        suspend fun getAll(): List<EatenItem>
-    }
+    @Query("SELECT * FROM eaten_table")
+    suspend fun getAll(): List<EatenItem>
+    
+    @Delete
+    suspend fun delete(item: EatenItem)
+}

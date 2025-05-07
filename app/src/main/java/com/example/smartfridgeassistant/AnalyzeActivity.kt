@@ -21,6 +21,7 @@ import kotlinx.coroutines.launch
 class AnalyzeActivity : AppCompatActivity() {
     private lateinit var wasteDao: WasteDao
     private lateinit var eatenDao: EatenDao
+    private lateinit var foodDao: FoodDao
     private val outList = mutableListOf<OutItem>()
     private lateinit var outAdapter: OutItemAdapter
     private lateinit var pieChart: PieChart
@@ -40,17 +41,59 @@ class AnalyzeActivity : AppCompatActivity() {
         val database = AppDatabase.getDatabase(this)
         wasteDao = database.wasteDao()
         eatenDao = database.eatenDao()
+        foodDao = database.foodDao()
 
         // 初始化 PieChart
         pieChart = findViewById(R.id.pie_chart)
 
         // 初始化 RecyclerView
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
-        outAdapter = OutItemAdapter(outList)
+        outAdapter = OutItemAdapter(outList) { item ->
+            // 处理返回按钮点击事件
+            lifecycleScope.launch {
+                when (item.state) {
+                    "廚餘" -> {
+                        // 从厨余表中删除
+                        val wasteItems = wasteDao.getAll()
+                        val wasteItem = wasteItems.find { it.name == item.name }
+                        wasteItem?.let { wasteDao.delete(it) }
+                    }
+                    "完食" -> {
+                        // 从完食表中删除
+                        val eatenItems = eatenDao.getAll()
+                        val eatenItem = eatenItems.find { it.name == item.name }
+                        eatenItem?.let { eatenDao.delete(it) }
+                    }
+                }
+                // 将食品添加回主列表
+                foodDao.insert(FoodItem(
+                    name = item.name,
+                    category = "冷藏", // 默认分类
+                    expiryDate = item.date,
+                    note = "",
+                    type = ""
+                ))
+                // 刷新列表
+                refreshList()
+            }
+        }
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = outAdapter
 
-        // 加載資料並設定 PieChart
+        // 加载数据
+        refreshList()
+
+        // 返回按钮
+        val fabBack = findViewById<FloatingActionButton>(R.id.fab_add)
+        fabBack.setOnClickListener {
+            val intent = Intent(this, Main::class.java)
+            startActivity(intent)
+            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+            finish()
+        }
+    }
+
+    private fun refreshList() {
         lifecycleScope.launch {
             try {
                 val wasteList = wasteDao.getAll()
@@ -66,7 +109,7 @@ class AnalyzeActivity : AppCompatActivity() {
                 outList.sortByDescending { it.date }
                 outAdapter.notifyDataSetChanged()
 
-                // 統計數據
+                // 统计数据
                 val dataMap = mapOf(
                     "廚餘" to wasteList.size,
                     "完食" to eatenList.size
@@ -76,15 +119,6 @@ class AnalyzeActivity : AppCompatActivity() {
             } catch (e: Exception) {
                 e.printStackTrace()
             }
-        }
-
-        // 返回按鈕
-        val fabBack = findViewById<FloatingActionButton>(R.id.fab_add)
-        fabBack.setOnClickListener {
-            val intent = Intent(this, Main::class.java)
-            startActivity(intent)
-            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
-            finish()
         }
     }
 
@@ -117,7 +151,7 @@ class AnalyzeActivity : AppCompatActivity() {
         legend.horizontalAlignment = Legend.LegendHorizontalAlignment.LEFT
         legend.setDrawInside(false)
 
-        dataSet.valueTextSize = 16f  // 數值字體
+        dataSet.valueTextSize = 16f  // 数值字体
         dataSet.valueTextColor = Color.DKGRAY
     }
 }

@@ -29,7 +29,7 @@
     </LinearLayout>
 
     <ImageButton
-        android:id="@+id/imageButton"
+        android:id="@+id/btnBack"
         android:layout_width="77dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
