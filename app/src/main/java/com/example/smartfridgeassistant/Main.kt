@@ -1,14 +1,19 @@
 package com.example.smartfridgeassistant
 
+import android.Manifest
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
@@ -23,6 +28,9 @@ import kotlinx.coroutines.launch
 import java.util.*
 
 class Main : AppCompatActivity() {
+    companion object {
+        private const val NOTIFICATION_PERMISSION_CODE = 123
+    }
 
     private lateinit var dao: FoodDao
     private lateinit var wasteDao: WasteDao
@@ -34,6 +42,9 @@ class Main : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.main)
+
+        // 检查并请求通知权限
+        checkNotificationPermission()
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -225,6 +236,37 @@ class Main : AppCompatActivity() {
             itemList.clear()
             itemList.addAll(data)
             adapter.notifyDataSetChanged()
+        }
+    }
+
+    private fun checkNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                    NOTIFICATION_PERMISSION_CODE
+                )
+            }
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == NOTIFICATION_PERMISSION_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "通知權限已授予", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "需要通知權限才能接收提醒", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 }
