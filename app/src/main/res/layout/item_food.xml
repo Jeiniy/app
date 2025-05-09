@@ -28,10 +28,17 @@
             android:text="分類：" />
 
         <TextView
-            android:id="@+id/tvDate"
+            android:id="@+id/tvType"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/tvCategory"
+            android:text="類型：" />
+
+        <TextView
+            android:id="@+id/tvDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvType"
             android:text="到期日：" />
 
         <TextView

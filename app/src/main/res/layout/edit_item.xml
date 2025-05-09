@@ -19,6 +19,12 @@
         android:layout_height="59dp"
         android:layout_marginTop="8dp" />
 
+    <Spinner
+        android:id="@+id/spinner_type"
+        android:layout_width="366dp"
+        android:layout_height="59dp"
+        android:layout_marginTop="8dp" />
+
     <TextView
         android:id="@+id/tv_expiry_date"
         android:layout_width="366dp"

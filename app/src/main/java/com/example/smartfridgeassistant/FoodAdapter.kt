@@ -23,6 +23,7 @@ class FoodAdapter(
     inner class FoodViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvName: TextView = itemView.findViewById(R.id.tvName)
         val tvCategory: TextView = itemView.findViewById(R.id.tvCategory)
+        val tvType: TextView = itemView.findViewById(R.id.tvType)
         val tvDate: TextView = itemView.findViewById(R.id.tvDate)
         val tvNote: TextView = itemView.findViewById(R.id.tvNote)
         val actionButtons: View = itemView.findViewById(R.id.action_buttons)
@@ -43,6 +44,7 @@ class FoodAdapter(
 
         holder.tvName.text = item.name
         holder.tvCategory.text = "分類：${item.category}"
+        holder.tvType.text = "類型：${item.type}"
         holder.tvDate.text = "到期日：${item.expiryDate}"
         holder.tvNote.text = "備註：${item.note}"
 

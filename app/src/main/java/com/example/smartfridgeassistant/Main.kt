@@ -188,7 +188,8 @@ class Main : AppCompatActivity() {
 
         val etName = dialogView.findViewById<EditText>(R.id.et_name)
         val etNote = dialogView.findViewById<EditText>(R.id.et_note)
-        val spinner = dialogView.findViewById<Spinner>(R.id.spinner_category)
+        val spinnerCategory = dialogView.findViewById<Spinner>(R.id.spinner_category)
+        val spinnerType = dialogView.findViewById<Spinner>(R.id.spinner_type)
         val tvDate = dialogView.findViewById<TextView>(R.id.tv_expiry_date)
         val btnDone = dialogView.findViewById<Button>(R.id.btn_done)
 
@@ -197,9 +198,14 @@ class Main : AppCompatActivity() {
         tvDate.text = item.expiryDate
 
         val categoryOptions = arrayOf("冷藏", "冷凍", "常溫")
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, categoryOptions)
-        spinner.adapter = adapter
-        spinner.setSelection(categoryOptions.indexOf(item.category))
+        val categoryAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, categoryOptions)
+        spinnerCategory.adapter = categoryAdapter
+        spinnerCategory.setSelection(categoryOptions.indexOf(item.category))
+
+        val typeOptions = arrayOf("肉類", "蔬菜類", "水果類", "飲料類", "點心類")
+        val typeAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, typeOptions)
+        spinnerType.adapter = typeAdapter
+        spinnerType.setSelection(typeOptions.indexOf(item.type))
 
         tvDate.setOnClickListener {
             val calendar = Calendar.getInstance()
@@ -218,7 +224,8 @@ class Main : AppCompatActivity() {
             val newItem = item.copy(
                 name = etName.text.toString(),
                 note = etNote.text.toString(),
-                category = spinner.selectedItem.toString(),
+                category = spinnerCategory.selectedItem.toString(),
+                type = spinnerType.selectedItem.toString(),
                 expiryDate = tvDate.text.toString()
             )
             lifecycleScope.launch {
