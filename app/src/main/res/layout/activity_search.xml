@@ -9,7 +9,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".SearchMainActivity">
+    tools:context=".SearchActivity">
 
     <!-- 搜尋欄 -->
     <EditText
@@ -31,17 +31,32 @@
         android:layout_weight="1" />
 
     <!-- 返回按鈕 -->
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_add"
-        android:layout_width="wrap_content"
+<!--    <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+<!--        android:id="@+id/fab_add"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_gravity="bottom|start"-->
+<!--        android:layout_margin="24dp"-->
+<!--        android:clickable="true"-->
+<!--        android:contentDescription="返回"-->
+<!--        app:backgroundTint="#86BFFF"-->
+<!--        app:iconSize="100dp"-->
+<!--        app:srcCompat="@drawable/ic_keyboard_backspace"-->
+<!--        app:tint="@android:color/white" />-->
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigationView"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|start"
-        android:layout_margin="24dp"
-        android:clickable="true"
-        android:contentDescription="返回"
-        app:backgroundTint="#86BFFF"
-        app:iconSize="100dp"
-        app:srcCompat="@drawable/ic_keyboard_backspace"
-        app:tint="@android:color/white" />
+        android:background="?android:attr/windowBackground"
+        app:itemIconSize="30dp"
+        app:itemPaddingBottom="3dp"
+        app:itemPaddingTop="12dp"
+        app:itemTextAppearanceActive="@style/BottomNavTextStyle"
+        app:itemTextAppearanceInactive="@style/BottomNavTextStyle"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/bottom_nav_menu" />
 
 </LinearLayout>

@@ -17,6 +17,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import android.widget.RadioGroup
 import androidx.lifecycle.lifecycleScope
@@ -52,6 +53,7 @@ class SettingActivity : AppCompatActivity() {
         sharedPreferences = getSharedPreferences("Settings", MODE_PRIVATE)
         dao = AppDatabase.getDatabase(this).foodDao()
 
+
         // 初始化提醒時間設置
         val radioGroup = findViewById<RadioGroup>(R.id.radio_group_reminder)
         val savedReminderTime = sharedPreferences.getInt("reminder_time", 0)
@@ -78,9 +80,10 @@ class SettingActivity : AppCompatActivity() {
 
         // 初始化食品類型設置
         val chipGroup = findViewById<ChipGroup>(R.id.chip_group_food)
-        val savedFoodTypes = sharedPreferences.getStringSet("food_types", setOf("all")) ?: setOf("all")
+        val savedFoodTypes =
+            sharedPreferences.getStringSet("food_types", setOf("all")) ?: setOf("all")
         selectedTypes.addAll(savedFoodTypes)
-        
+
         // 设置已保存的选中状态
         for (i in 0 until chipGroup.childCount) {
             val chip = chipGroup.getChildAt(i) as? Chip
@@ -96,7 +99,7 @@ class SettingActivity : AppCompatActivity() {
         chipGroup.setOnCheckedChangeListener { group, _ ->
             selectedTypes.clear()
             var hasSelection = false
-            
+
             for (i in 0 until group.childCount) {
                 val chip = group.getChildAt(i) as? Chip
                 if (chip?.isChecked == true) {
@@ -123,16 +126,13 @@ class SettingActivity : AppCompatActivity() {
             // 保存选中的类型
             sharedPreferences.edit().putStringSet("food_types", selectedTypes).apply()
             Log.d("SettingActivity", "保存的类型: $selectedTypes")
-            
+
             // 获取当前提醒时间设置并触发通知检查
             val currentReminderTime = sharedPreferences.getInt("reminder_time", 0)
             checkAndSendNotifications(currentReminderTime)
         }
 
-        // 設置返回按鈕
-        findViewById<FloatingActionButton>(R.id.fab_add).setOnClickListener {
-            finish()
-        }
+        setupBottomNav(this, R.id.nav_setting)
     }
 
     private fun checkAndSendNotifications(reminderTime: Int) {
@@ -140,27 +140,32 @@ class SettingActivity : AppCompatActivity() {
             val allFoods = dao.getAll()
             val currentDate = Calendar.getInstance()
             val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-            
+
             // 计算目标日期
             val targetDate = Calendar.getInstance()
-            targetDate.add(Calendar.DAY_OF_MONTH, when (reminderTime) {
-                0 -> 7  // 一周后
-                1 -> 1  // 一天后
-                else -> 0  // 当天
-            })
+            targetDate.add(
+                Calendar.DAY_OF_MONTH, when (reminderTime) {
+                    0 -> 7  // 一周后
+                    1 -> 1  // 一天后
+                    else -> 0  // 当天
+                }
+            )
             val targetDateStr = dateFormat.format(targetDate.time)
-            
+
             // 添加调试信息
             Log.d("SettingActivity", "选中的类型: $selectedTypes")
             Log.d("SettingActivity", "目标日期: $targetDateStr")
             Log.d("SettingActivity", "所有食品: ${allFoods.map { "${it.name}(${it.type})" }}")
-            
+
             // 检查所有食品并发送通知
             var notificationSent = false
             allFoods.forEach { food ->
                 // 添加调试信息
-                Log.d("SettingActivity", "检查食品: ${food.name}, 类型: '${food.type}', 到期日: ${food.expiryDate}")
-                
+                Log.d(
+                    "SettingActivity",
+                    "检查食品: ${food.name}, 类型: '${food.type}', 到期日: ${food.expiryDate}"
+                )
+
                 // 检查食品类型是否在选中范围内
                 val shouldNotify = if (selectedTypes.contains("all")) {
                     Log.d("SettingActivity", "选中了全部类型")
@@ -168,24 +173,27 @@ class SettingActivity : AppCompatActivity() {
                 } else {
                     // 确保类型名称完全匹配
                     val foodType = food.type.trim()
-                    val isTypeSelected = selectedTypes.any { selectedType -> 
+                    val isTypeSelected = selectedTypes.any { selectedType ->
                         val matches = selectedType.trim() == foodType
-                        Log.d("SettingActivity", "比较类型: '$selectedType' 与 '$foodType', 匹配结果: $matches")
+                        Log.d(
+                            "SettingActivity",
+                            "比较类型: '$selectedType' 与 '$foodType', 匹配结果: $matches"
+                        )
                         matches
                     }
                     Log.d("SettingActivity", "食品类型: '$foodType', 是否匹配: $isTypeSelected")
                     isTypeSelected
                 }
-                
+
                 if (shouldNotify) {
                     // 确保日期格式一致
                     val foodExpiryDate = dateFormat.parse(food.expiryDate)
                     val targetDateParsed = dateFormat.parse(targetDateStr)
-                    
+
                     if (foodExpiryDate != null && targetDateParsed != null) {
                         val datesMatch = foodExpiryDate.time == targetDateParsed.time
                         Log.d("SettingActivity", "日期是否匹配: $datesMatch")
-                        
+
                         if (datesMatch) {
                             notificationSent = true
                             NotificationHelper(this@SettingActivity).showExpiryNotification(
@@ -197,21 +205,26 @@ class SettingActivity : AppCompatActivity() {
                     }
                 }
             }
-            
+
             // 如果没有找到符合条件的食品，显示提示
             if (!notificationSent) {
                 runOnUiThread {
                     val message = when {
-                        selectedTypes.contains("all") -> "沒有找到${when (reminderTime) {
-                            0 -> "一周后"
-                            1 -> "一天后"
-                            else -> "当天"
-                        }}過期的食品"
-                        else -> "沒有找到${when (reminderTime) {
-                            0 -> "一周后"
-                            1 -> "一天后"
-                            else -> "当天"
-                        }}過期的${selectedTypes.joinToString("、")}類食品"
+                        selectedTypes.contains("all") -> "沒有找到${
+                            when (reminderTime) {
+                                0 -> "一周后"
+                                1 -> "一天后"
+                                else -> "当天"
+                            }
+                        }過期的食品"
+
+                        else -> "沒有找到${
+                            when (reminderTime) {
+                                0 -> "一周后"
+                                1 -> "一天后"
+                                else -> "当天"
+                            }
+                        }過期的${selectedTypes.joinToString("、")}類食品"
                     }
                     Toast.makeText(this@SettingActivity, message, Toast.LENGTH_SHORT).show()
                 }

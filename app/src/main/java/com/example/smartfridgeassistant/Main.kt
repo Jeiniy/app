@@ -60,16 +60,16 @@ class Main : AppCompatActivity() {
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
         bottomNavigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.nav_reminder -> {
+                R.id.nav_setting -> {
                     startActivity(Intent(this, SettingActivity::class.java))
                     true
                 }
-                R.id.nav_stats -> {
+                R.id.nav_analyze -> {
                     startActivity(Intent(this, AnalyzeActivity::class.java))
                     true
                 }
                 R.id.nav_search -> {
-                    startActivity(Intent(this, SearchMainActivity::class.java))
+                    startActivity(Intent(this, SearchActivity::class.java))
                     true
                 }
                 else -> false

@@ -1,6 +1,5 @@
 package com.example.smartfridgeassistant
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import android.text.Editable
@@ -11,9 +10,8 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finalproject.Food
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 
-class SearchMainActivity : AppCompatActivity() {
+class SearchActivity : AppCompatActivity() {
 
     private lateinit var adapter: SearchResultAdapter
     private lateinit var foodList: List<Food>
@@ -69,13 +67,14 @@ class SearchMainActivity : AppCompatActivity() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
-        val fabBack = findViewById<FloatingActionButton>(R.id.fab_add)
-
-        fabBack.setOnClickListener {
-            val intent = Intent(this, Main::class.java)
-            startActivity(intent)
-            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
-            finish()
-        }
+//        val fabBack = findViewById<FloatingActionButton>(R.id.fab_add)
+//
+//        fabBack.setOnClickListener {
+//            val intent = Intent(this, Main::class.java)
+//            startActivity(intent)
+//            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+//            finish()
+//        }
+        setupBottomNav(this, R.id.nav_search)
     }
 }

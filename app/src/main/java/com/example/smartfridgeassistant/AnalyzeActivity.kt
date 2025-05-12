@@ -15,8 +15,10 @@ import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
-import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.github.mikephil.charting.formatter.PercentFormatter
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.launch
+import com.github.mikephil.charting.formatter.ValueFormatter
 
 class AnalyzeActivity : AppCompatActivity() {
     private lateinit var wasteDao: WasteDao
@@ -84,13 +86,15 @@ class AnalyzeActivity : AppCompatActivity() {
         refreshList()
 
         // 返回按钮
-        val fabBack = findViewById<FloatingActionButton>(R.id.fab_add)
-        fabBack.setOnClickListener {
-            val intent = Intent(this, Main::class.java)
-            startActivity(intent)
-            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
-            finish()
-        }
+//        val fabBack = findViewById<FloatingActionButton>(R.id.fab_add)
+//        fabBack.setOnClickListener {
+//            val intent = Intent(this, Main::class.java)
+//            startActivity(intent)
+//            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+//            finish()
+//        }
+        setupBottomNav(this, R.id.nav_analyze)
+
     }
 
     private fun refreshList() {
@@ -127,20 +131,32 @@ class AnalyzeActivity : AppCompatActivity() {
         dataMap.forEach { (label, value) ->
             if (value > 0) entries.add(PieEntry(value.toFloat(), label))
         }
-
+        class IntPercentFormatter : ValueFormatter() {
+            override fun getFormattedValue(value: Float): String {
+                return "${value.toInt()}%"
+            }
+        }
         val dataSet = PieDataSet(entries, "浪費概況")
         dataSet.colors = listOf(Color.parseColor("#86BFFF"), Color.parseColor("#FFF59D"))
-        dataSet.valueTextSize = 14f
+        dataSet.valueTextSize = 16f
+        dataSet.valueTextColor = Color.DKGRAY
 
         val data = PieData(dataSet)
+
+// ✅ 顯示百分比
+        pieChart.setUsePercentValues(true)
+        data.setValueFormatter(IntPercentFormatter())
+
+// ✅ 設定 PieChart 外觀
         pieChart.data = data
         pieChart.description.isEnabled = false
         pieChart.centerText = "浪費比例"
-        pieChart.setEntryLabelColor(Color.BLACK)
         pieChart.setCenterTextSize(18f)
+        pieChart.setEntryLabelColor(Color.BLACK)
         pieChart.animateY(1000)
         pieChart.invalidate()
 
+// ✅ 圖例設定
         val legend = pieChart.legend
         legend.textSize = 14f
         legend.formSize = 12f
@@ -151,7 +167,5 @@ class AnalyzeActivity : AppCompatActivity() {
         legend.horizontalAlignment = Legend.LegendHorizontalAlignment.LEFT
         legend.setDrawInside(false)
 
-        dataSet.valueTextSize = 16f  // 数值字体
-        dataSet.valueTextColor = Color.DKGRAY
     }
 }
