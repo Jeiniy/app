@@ -13,6 +13,9 @@ interface FoodDao {
     @Query("SELECT * FROM food_table WHERE category = :category")
     suspend fun getByCategory(category: String): List<FoodItem>
 
+    @Query("SELECT * FROM food_table")
+    suspend fun getAllFoods(): List<FoodItem>
+
     @Delete
     suspend fun delete(item: FoodItem)
 
