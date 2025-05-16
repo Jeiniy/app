@@ -4,9 +4,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.cardview.widget.CardView
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.*
 
 class FoodAdapter(
     private val itemList: MutableList<FoodItem>,
@@ -19,6 +22,7 @@ class FoodAdapter(
 
     // ➤ 記錄哪幾個 item 有展開
     private val expandedPositionSet = mutableSetOf<Int>()
+    private val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
     inner class FoodViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvName: TextView = itemView.findViewById(R.id.tvName)
@@ -31,6 +35,7 @@ class FoodAdapter(
         val btnTrash: ImageButton = itemView.findViewById(R.id.btn_trash)
         val btnEat: ImageButton = itemView.findViewById(R.id.btn_eat)
         val btnDelete: ImageButton = itemView.findViewById(R.id.btn_delete)
+        val cardView: CardView = itemView as CardView
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FoodViewHolder {
@@ -47,6 +52,23 @@ class FoodAdapter(
         holder.tvType.text = "類型：${item.type}"
         holder.tvDate.text = "到期日：${item.expiryDate}"
         holder.tvNote.text = "備註：${item.note}"
+
+        // 设置卡片背景颜色
+        val today = Calendar.getInstance()
+        val expiryDate = dateFormat.parse(item.expiryDate)
+        val daysUntilExpiry = if (expiryDate != null) {
+            val diff = expiryDate.time - today.time.time
+            diff / (24 * 60 * 60 * 1000)
+        } else {
+            Long.MAX_VALUE
+        }
+
+        val backgroundColor = when {
+            daysUntilExpiry <= 1 -> R.color.card_light_red
+            daysUntilExpiry <= 7 -> R.color.card_light_blue
+            else -> R.color.card_white
+        }
+        holder.cardView.setCardBackgroundColor(holder.itemView.context.getColor(backgroundColor))
 
         // 👉 判斷這張卡片是否是展開狀態
         val isExpanded = expandedPosition == position
