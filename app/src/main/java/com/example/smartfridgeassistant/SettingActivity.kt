@@ -1,10 +1,6 @@
 package com.example.smartfridgeassistant
 
 import android.Manifest
-import android.app.AlarmManager
-import android.app.PendingIntent
-import android.content.Context
-import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Build
@@ -17,12 +13,8 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import android.widget.RadioGroup
 import androidx.lifecycle.lifecycleScope
-import com.google.android.material.chip.Chip
-import com.google.android.material.chip.ChipGroup
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
@@ -34,7 +26,6 @@ class SettingActivity : AppCompatActivity() {
 
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var dao: FoodDao
-    private val selectedTypes = mutableSetOf<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,7 +43,6 @@ class SettingActivity : AppCompatActivity() {
 
         sharedPreferences = getSharedPreferences("Settings", MODE_PRIVATE)
         dao = AppDatabase.getDatabase(this).foodDao()
-
 
         // 初始化提醒時間設置
         val radioGroup = findViewById<RadioGroup>(R.id.radio_group_reminder)
@@ -78,60 +68,6 @@ class SettingActivity : AppCompatActivity() {
             checkAndSendNotifications(reminderTime)
         }
 
-        // 初始化食品類型設置
-        val chipGroup = findViewById<ChipGroup>(R.id.chip_group_food)
-        val savedFoodTypes =
-            sharedPreferences.getStringSet("food_types", setOf("all")) ?: setOf("all")
-        selectedTypes.addAll(savedFoodTypes)
-
-        // 设置已保存的选中状态
-        for (i in 0 until chipGroup.childCount) {
-            val chip = chipGroup.getChildAt(i) as? Chip
-            if (chip != null) {
-                chip.isChecked = when (chip.text.toString()) {
-                    "全部" -> savedFoodTypes.contains("all")
-                    else -> savedFoodTypes.contains(chip.text.toString())
-                }
-            }
-        }
-
-        // 设置ChipGroup的监听器
-        chipGroup.setOnCheckedChangeListener { group, _ ->
-            selectedTypes.clear()
-            var hasSelection = false
-
-            for (i in 0 until group.childCount) {
-                val chip = group.getChildAt(i) as? Chip
-                if (chip?.isChecked == true) {
-                    hasSelection = true
-                    val chipText = chip.text.toString().trim()
-                    Log.d("SettingActivity", "Chip文本: '$chipText'")
-                    if (chipText == "全部") {
-                        selectedTypes.add("all")
-                        Log.d("SettingActivity", "添加全部类型")
-                    } else {
-                        selectedTypes.add(chipText)
-                        Log.d("SettingActivity", "添加类型: '$chipText'")
-                    }
-                }
-            }
-
-            // 如果没有选中任何选项，默认选中"全部"
-            if (!hasSelection) {
-                selectedTypes.add("all")
-                (group.getChildAt(0) as? Chip)?.isChecked = true
-                Log.d("SettingActivity", "默认选中全部")
-            }
-
-            // 保存选中的类型
-            sharedPreferences.edit().putStringSet("food_types", selectedTypes).apply()
-            Log.d("SettingActivity", "保存的类型: $selectedTypes")
-
-            // 获取当前提醒时间设置并触发通知检查
-            val currentReminderTime = sharedPreferences.getInt("reminder_time", 0)
-            checkAndSendNotifications(currentReminderTime)
-        }
-
         setupBottomNav(this, R.id.nav_setting)
     }
 
@@ -153,7 +89,6 @@ class SettingActivity : AppCompatActivity() {
             val targetDateStr = dateFormat.format(targetDate.time)
 
             // 添加调试信息
-            Log.d("SettingActivity", "选中的类型: $selectedTypes")
             Log.d("SettingActivity", "目标日期: $targetDateStr")
             Log.d("SettingActivity", "所有食品: ${allFoods.map { "${it.name}(${it.type})" }}")
 
@@ -166,42 +101,21 @@ class SettingActivity : AppCompatActivity() {
                     "检查食品: ${food.name}, 类型: '${food.type}', 到期日: ${food.expiryDate}"
                 )
 
-                // 检查食品类型是否在选中范围内
-                val shouldNotify = if (selectedTypes.contains("all")) {
-                    Log.d("SettingActivity", "选中了全部类型")
-                    true
-                } else {
-                    // 确保类型名称完全匹配
-                    val foodType = food.type.trim()
-                    val isTypeSelected = selectedTypes.any { selectedType ->
-                        val matches = selectedType.trim() == foodType
-                        Log.d(
-                            "SettingActivity",
-                            "比较类型: '$selectedType' 与 '$foodType', 匹配结果: $matches"
+                // 确保日期格式一致
+                val foodExpiryDate = dateFormat.parse(food.expiryDate)
+                val targetDateParsed = dateFormat.parse(targetDateStr)
+
+                if (foodExpiryDate != null && targetDateParsed != null) {
+                    val datesMatch = foodExpiryDate.time == targetDateParsed.time
+                    Log.d("SettingActivity", "日期是否匹配: $datesMatch")
+
+                    if (datesMatch) {
+                        notificationSent = true
+                        NotificationHelper(this@SettingActivity).showExpiryNotification(
+                            food.name,
+                            food.expiryDate
                         )
-                        matches
-                    }
-                    Log.d("SettingActivity", "食品类型: '$foodType', 是否匹配: $isTypeSelected")
-                    isTypeSelected
-                }
-
-                if (shouldNotify) {
-                    // 确保日期格式一致
-                    val foodExpiryDate = dateFormat.parse(food.expiryDate)
-                    val targetDateParsed = dateFormat.parse(targetDateStr)
-
-                    if (foodExpiryDate != null && targetDateParsed != null) {
-                        val datesMatch = foodExpiryDate.time == targetDateParsed.time
-                        Log.d("SettingActivity", "日期是否匹配: $datesMatch")
-
-                        if (datesMatch) {
-                            notificationSent = true
-                            NotificationHelper(this@SettingActivity).showExpiryNotification(
-                                food.name,
-                                food.expiryDate
-                            )
-                            Log.d("SettingActivity", "发送通知: ${food.name}")
-                        }
+                        Log.d("SettingActivity", "发送通知: ${food.name}")
                     }
                 }
             }
@@ -209,23 +123,13 @@ class SettingActivity : AppCompatActivity() {
             // 如果没有找到符合条件的食品，显示提示
             if (!notificationSent) {
                 runOnUiThread {
-                    val message = when {
-                        selectedTypes.contains("all") -> "沒有找到${
-                            when (reminderTime) {
-                                0 -> "一周后"
-                                1 -> "一天后"
-                                else -> "当天"
-                            }
-                        }過期的食品"
-
-                        else -> "沒有找到${
-                            when (reminderTime) {
-                                0 -> "一周后"
-                                1 -> "一天后"
-                                else -> "当天"
-                            }
-                        }過期的${selectedTypes.joinToString("、")}類食品"
-                    }
+                    val message = "沒有找到${
+                        when (reminderTime) {
+                            0 -> "一周后"
+                            1 -> "一天后"
+                            else -> "当天"
+                        }
+                    }過期的食品"
                     Toast.makeText(this@SettingActivity, message, Toast.LENGTH_SHORT).show()
                 }
             }
