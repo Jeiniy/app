@@ -1,12 +1,15 @@
 package com.example.smartfridgeassistant
 
+
 import android.Manifest
 import android.app.AlertDialog
 import android.app.DatePickerDialog
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
@@ -27,6 +30,7 @@ import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.launch
 import java.util.*
+
 
 class Main : AppCompatActivity() {
     companion object {
@@ -199,6 +203,7 @@ class Main : AppCompatActivity() {
 
         // 初始載入列表
         refreshItemList()
+
     }
 
     private fun showEditDialog(item: FoodItem) {

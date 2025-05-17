@@ -64,6 +64,7 @@ class FoodAdapter(
         }
 
         val backgroundColor = when {
+            daysUntilExpiry < 0 -> R.color.card_light_gray
             daysUntilExpiry <= 1 -> R.color.card_light_red
             daysUntilExpiry <= 7 -> R.color.card_light_blue
             else -> R.color.card_white
