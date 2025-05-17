@@ -72,8 +72,8 @@ class AnalyzeActivity : AppCompatActivity() {
                     name = item.name,
                     category = "冷藏", // 默认分类
                     expiryDate = item.date,
-                    note = "",
-                    type = ""
+                    note = item.note,
+                    type = item.type
                 ))
                 // 刷新列表
                 refreshList()
@@ -105,10 +105,10 @@ class AnalyzeActivity : AppCompatActivity() {
 
                 outList.clear()
                 wasteList.forEach { waste ->
-                    outList.add(OutItem(waste.name, "廚餘", waste.date))
+                    outList.add(OutItem(waste.name, "廚餘", waste.date,waste.category,waste.type,waste.note))
                 }
                 eatenList.forEach { eaten ->
-                    outList.add(OutItem(eaten.name, "完食", eaten.date))
+                    outList.add(OutItem(eaten.name, "完食", eaten.date,eaten.category,eaten.type,eaten.note))
                 }
                 outList.sortByDescending { it.date }
                 outAdapter.notifyDataSetChanged()

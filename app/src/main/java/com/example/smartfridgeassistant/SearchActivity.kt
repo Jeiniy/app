@@ -49,7 +49,7 @@ class SearchActivity : AppCompatActivity() {
         val searchTypeGroup = findViewById<RadioGroup>(R.id.searchTypeGroup)
 
         // 设置类型选择器的选项
-        val typeOptions = arrayOf("肉類", "蔬菜類", "水果類", "飲料類", "點心類")
+        val typeOptions = arrayOf("肉類", "蔬菜類","乳品類","水果類", "飲料類", "點心類","熟食","其他")
         val spinnerAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, typeOptions)
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         typeSpinner.adapter = spinnerAdapter

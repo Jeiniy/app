@@ -84,14 +84,29 @@ class Main : AppCompatActivity() {
             onDeleteItem = { foodItem -> lifecycleScope.launch { dao.delete(foodItem); refreshItemList() } },
             onTrashItem = { foodItem ->
                 lifecycleScope.launch {
-                    wasteDao.insert(WasteItem(name = foodItem.name))
+                    wasteDao.insert(
+                        WasteItem(
+                            name = foodItem.name,
+                            category = foodItem.category,
+                            note = foodItem.note,
+                            type = foodItem.type,
+                            date = foodItem.expiryDate
+                        )
+                    )
                     dao.delete(foodItem)
                     refreshItemList()
                 }
             },
             onEatItem = { foodItem ->
                 lifecycleScope.launch {
-                    eatenDao.insert(EatenItem(name = foodItem.name))
+                    eatenDao.insert(EatenItem(
+                        name = foodItem.name,
+                        category = foodItem.category,
+                        note = foodItem.note,
+                        type = foodItem.type,
+                        date = foodItem.expiryDate
+                        )
+                    )
                     dao.delete(foodItem)
                     refreshItemList()
                 }
@@ -206,7 +221,7 @@ class Main : AppCompatActivity() {
         spinnerCategory.adapter = categoryAdapter
         spinnerCategory.setSelection(categoryOptions.indexOf(item.category))
 
-        val typeOptions = arrayOf("肉類", "蔬菜類", "水果類", "飲料類", "點心類")
+        val typeOptions = arrayOf("肉類", "蔬菜類","乳品類","水果類", "飲料類", "點心類","熟食","其他")
         val typeAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, typeOptions)
         spinnerType.adapter = typeAdapter
         spinnerType.setSelection(typeOptions.indexOf(item.type))

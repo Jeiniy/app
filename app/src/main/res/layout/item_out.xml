@@ -26,6 +26,26 @@
             android:layout_height="wrap_content"
             android:text="狀態"
             android:textSize="16sp" />
+        <TextView
+            android:id="@+id/tvOutCategory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="分類："
+            android:visibility="gone"/>
+
+        <TextView
+            android:id="@+id/tvOutType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="類型："
+            android:visibility="gone"/>
+
+        <TextView
+            android:id="@+id/tvOutNote"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="備註："
+            android:visibility="gone"/>
     </LinearLayout>
 
     <ImageButton
