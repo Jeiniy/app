@@ -13,6 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finalproject.Food
+import com.google.android.material.datepicker.MaterialDatePicker
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
@@ -65,18 +66,18 @@ class SearchActivity : AppCompatActivity() {
 
         // 设置日期选择器
         btnCalendar.setOnClickListener {
-            val calendar = Calendar.getInstance()
-            DatePickerDialog(
-                this,
-                { _, year, month, dayOfMonth ->
-                    val date = String.format("%04d-%02d-%02d", year, month + 1, dayOfMonth)
-                    dateInput.setText(date)
-                    performSearch()
-                },
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH)
-            ).show()
+            val datePicker = com.google.android.material.datepicker.MaterialDatePicker.Builder.datePicker()
+                .setTitleText("選擇日期")
+                .build()
+
+            datePicker.show(supportFragmentManager, "SEARCH_DATE_PICKER")
+
+            datePicker.addOnPositiveButtonClickListener { selection ->
+                val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                val date = sdf.format(Date(selection))
+                dateInput.setText(date)
+                performSearch()
+            }
         }
 
         // 设置搜索类型切换监听器
@@ -146,7 +147,7 @@ class SearchActivity : AppCompatActivity() {
                         val targetDate = dateFormat.parse(dateStr)
                         foodList.filter { 
                             val foodDate = dateFormat.parse(it.expiryDate)
-                            foodDate != null && targetDate != null && foodDate <= targetDate
+                            foodDate != null && targetDate != null && foodDate == targetDate
                         }
                     } catch (e: Exception) {
                         foodList

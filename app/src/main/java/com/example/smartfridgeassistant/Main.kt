@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
+import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.launch
 import java.util.*
@@ -146,16 +147,17 @@ class Main : AppCompatActivity() {
             }
 
             dateText.setOnClickListener {
-                val calendar = Calendar.getInstance()
-                DatePickerDialog(
-                    this,
-                    { _, year, month, dayOfMonth ->
-                        dateText.text = "$year-${month + 1}-$dayOfMonth"
-                    },
-                    calendar.get(Calendar.YEAR),
-                    calendar.get(Calendar.MONTH),
-                    calendar.get(Calendar.DAY_OF_MONTH)
-                ).show()
+                val datePicker = MaterialDatePicker.Builder.datePicker()
+                    .setTitleText("選擇到期日")
+                    .build()
+
+                datePicker.show(supportFragmentManager, "DATE_PICKER")
+
+                datePicker.addOnPositiveButtonClickListener { selection ->
+                    val sdf = java.text.SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                    val date = sdf.format(Date(selection))
+                    dateText.text = date
+                }
             }
 
             saveButton.setOnClickListener {
@@ -163,18 +165,20 @@ class Main : AppCompatActivity() {
                 val category = categorySpinner.selectedItem.toString()
                 val date = dateText.text.toString()
                 val note = noteEditText.text.toString()
-
-                if (name.isNotBlank() && date.isNotBlank()) {
-                    val newItem = FoodItem(name = name, category = category, expiryDate = date, note = note, type = selectedType)
+                val type = selectedType.trim()
+                val datePattern = Regex("\\d{4}-\\d{1,2}-\\d{1,2}")
+                if (name.isNotBlank() && type.isNotBlank() && date.matches(datePattern)) {
+                    val newItem = FoodItem(name = name, category = category, expiryDate = date, note = note, type = type)
                     lifecycleScope.launch {
                         dao.insert(newItem)
                         refreshItemList()
                     }
                     dialog.dismiss()
                 } else {
-                    Toast.makeText(this, "請填寫名稱與到期日", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "請填寫完整資訊（名稱、種類與到期日）", Toast.LENGTH_SHORT).show()
                 }
-            }
+
+        }
             dialog.show()
         }
 
@@ -208,16 +212,17 @@ class Main : AppCompatActivity() {
         spinnerType.setSelection(typeOptions.indexOf(item.type))
 
         tvDate.setOnClickListener {
-            val calendar = Calendar.getInstance()
-            DatePickerDialog(
-                this,
-                { _, year, month, day ->
-                    tvDate.text = "$year-${month + 1}-$day"
-                },
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH)
-            ).show()
+            val datePicker = MaterialDatePicker.Builder.datePicker()
+                .setTitleText("選擇到期日")
+                .build()
+
+            datePicker.show(this@Main.supportFragmentManager, "EDIT_DATE_PICKER")
+
+            datePicker.addOnPositiveButtonClickListener { selection ->
+                val sdf = java.text.SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                val date = sdf.format(Date(selection))
+                tvDate.text = date
+            }
         }
 
         btnDone.setOnClickListener {
