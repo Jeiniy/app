@@ -66,7 +66,7 @@
         android:id="@+id/btn_save"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="152dp"
+        android:layout_marginTop="184dp"
         android:text="OK"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -90,6 +90,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="肉類"
+            android:checkable="true"  />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_fish"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="海鮮類"
             android:checkable="true"  />
 
         <com.google.android.material.chip.Chip

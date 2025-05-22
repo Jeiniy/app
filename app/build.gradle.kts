@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.smartfridgeassistant"
-        minSdk = 35
+        minSdk = 30
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -55,5 +55,6 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     kapt("androidx.room:room-compiler:2.7.0")
+    implementation ("com.journeyapps:zxing-android-embedded:4.3.0")
 
 }

@@ -94,8 +94,8 @@
     <!-- 搜尋結果列表 -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_width="427dp"
+        android:layout_height="514dp"
         android:layout_marginTop="12dp"
         android:layout_weight="1" />
 
