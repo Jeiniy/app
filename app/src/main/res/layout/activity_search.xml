@@ -4,27 +4,31 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp"
-    android:fitsSystemWindows="true"
+    android:paddingStart="10dp"
+    android:paddingEnd="10dp"
+    android:fitsSystemWindows="false"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".SearchActivity">
 
     <!-- 搜尋類型選擇 -->
+
+    <!-- 搜尋欄 -->
+
     <RadioGroup
         android:id="@+id/searchTypeGroup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginBottom="16dp">
+        android:layout_marginBottom="10dp"
+        android:orientation="horizontal">
 
         <RadioButton
             android:id="@+id/radioName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="名稱搜尋"
-            android:checked="true" />
+            android:checked="true"
+            android:text="名稱搜尋" />
 
         <RadioButton
             android:id="@+id/radioDate"
@@ -39,7 +43,6 @@
             android:text="類型搜尋" />
     </RadioGroup>
 
-    <!-- 搜尋欄 -->
     <EditText
         android:id="@+id/search_input"
         android:layout_width="match_parent"
@@ -92,12 +95,6 @@
         android:background="@android:drawable/edit_text" />
 
     <!-- 搜尋結果列表 -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_view"
-        android:layout_width="427dp"
-        android:layout_height="514dp"
-        android:layout_marginTop="12dp"
-        android:layout_weight="1" />
 
     <!-- 返回按鈕 -->
 <!--    <com.google.android.material.floatingactionbutton.FloatingActionButton-->
@@ -112,6 +109,13 @@
 <!--        app:iconSize="100dp"-->
 <!--        app:srcCompat="@drawable/ic_keyboard_backspace"-->
 <!--        app:tint="@android:color/white" />-->
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="462dp"
+        android:layout_marginTop="12dp"
+        android:layout_weight="1" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationView"

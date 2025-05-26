@@ -6,6 +6,8 @@
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
     <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
 
     <application
         android:allowBackup="true"
@@ -23,7 +25,7 @@
 <!--            android:exported="false" />-->
 
         <activity
-            android:name=".Main"
+            android:name=".SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -31,9 +33,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".Main" />
         <activity android:name=".SettingActivity" />
         <activity android:name=".AnalyzeActivity" />
         <activity android:name=".SearchActivity" />
+
 
         <receiver
             android:name=".ExpiryCheckReceiver"

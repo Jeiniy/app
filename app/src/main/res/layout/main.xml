@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
@@ -8,37 +8,36 @@
     android:layout_height="match_parent"
     tools:context=".Main">
 
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
-        android:layout_width="354dp"
-        android:layout_height="635dp"
-        android:layout_marginEnd="4dp"
-        android:layout_marginBottom="4dp"
+        android:layout_width="361dp"
+        android:layout_height="646dp"
+        android:layout_marginTop="52dp"
         android:contentDescription="食材列表"
         android:fadeScrollbars="false"
         android:scrollbarThumbVertical="@drawable/scrollbar_thumb"
         android:scrollbarTrackVertical="@drawable/scrollbar_track"
         android:scrollbars="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/bottomNavigationView"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.508"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Spinner
         android:id="@+id/spinner"
-        android:layout_width="285dp"
-        android:layout_height="54dp"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="4dp"
+        android:layout_width="252dp"
+        android:layout_height="45dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_add"
         android:layout_width="56dp"
-        android:layout_height="54dp"
+        android:layout_height="56dp"
         android:layout_marginEnd="36dp"
-        android:layout_marginBottom="124dp"
+        android:layout_marginBottom="80dp"
         android:clickable="true"
         android:contentDescription="new"
         android:tintMode="src_in"
@@ -65,15 +64,27 @@
 
     <ImageButton
         android:id="@+id/scanButton"
-        android:layout_width="96dp"
-        android:layout_height="54dp"
-        android:layout_marginTop="4dp"
+        android:layout_width="41dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="64dp"
         android:background="@android:color/transparent"
         android:contentDescription="掃描"
         android:src="@drawable/ic_scanner"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.714"
-        app:layout_constraintStart_toEndOf="@+id/spinner"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/lightbulb"
+        android:layout_width="41dp"
+        android:layout_height="43dp"
+        android:layout_marginTop="8dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="提示"
+        android:src="@drawable/ic_lightbulb"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.957"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

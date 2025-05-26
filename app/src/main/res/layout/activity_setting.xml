@@ -74,7 +74,7 @@
         android:background="?android:attr/windowBackground"
         app:itemIconSize="30dp"
         app:itemPaddingBottom="3dp"
-        app:itemPaddingTop="12dp"
+        app:itemPaddingTop="10dp"
         app:itemTextAppearanceActive="@style/BottomNavTextStyle"
         app:itemTextAppearanceInactive="@style/BottomNavTextStyle"
         app:layout_constraintBottom_toBottomOf="parent"

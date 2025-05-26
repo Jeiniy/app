@@ -1,6 +1,7 @@
 package com.example.smartfridgeassistant
 
-
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.Manifest
 import android.app.AlertDialog
 import android.app.DatePickerDialog
@@ -50,6 +51,26 @@ class Main : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.main)
+
+        val lightbulb: ImageButton = findViewById(R.id.lightbulb)
+        lightbulb.setOnClickListener {
+            val dialogView = layoutInflater.inflate(R.layout.dialog_help, null)
+
+            val webView = dialogView.findViewById<WebView>(R.id.youtube_webview)
+            webView.settings.javaScriptEnabled = true
+            webView.loadData(
+                "<iframe width=\"100%\" height=\"100%\" src=\"https://www.youtube.com/embed/j7TpJtYL9CM\" frameborder=\"0\" allowfullscreen></iframe>",
+                "text/html",
+                "utf-8"
+            )
+
+            AlertDialog.Builder(this)
+                .setTitle("💡操作說明")
+                .setView(dialogView)
+                .setPositiveButton("關閉", null)
+                .show()
+        }
+
 
         // 检查并请求通知权限
         checkNotificationPermission()
@@ -138,6 +159,7 @@ class Main : AppCompatActivity() {
                     refreshItemList()
                 }
             }
+
         )
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.layoutManager = GridLayoutManager(this, 2)
@@ -249,7 +271,7 @@ class Main : AppCompatActivity() {
         spinnerCategory.adapter = categoryAdapter
         spinnerCategory.setSelection(categoryOptions.indexOf(item.category))
 
-        val typeOptions = arrayOf("肉類", "海鮮","蔬菜類","乳品類","水果類", "飲料類", "點心類","熟食","其他")
+        val typeOptions = arrayOf("肉類", "海鮮類","蔬菜類","乳品類","水果類", "飲料類", "點心類","熟食","其他")
         val typeAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, typeOptions)
         spinnerType.adapter = typeAdapter
         spinnerType.setSelection(typeOptions.indexOf(item.type))
