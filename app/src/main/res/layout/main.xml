@@ -6,6 +6,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/bg1"
     tools:context=".Main">
 
     <androidx.recyclerview.widget.RecyclerView
@@ -37,7 +38,7 @@
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:layout_marginEnd="36dp"
-        android:layout_marginBottom="80dp"
+        android:layout_marginBottom="92dp"
         android:clickable="true"
         android:contentDescription="new"
         android:tintMode="src_in"

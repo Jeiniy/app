@@ -37,6 +37,10 @@
         <activity android:name=".SettingActivity" />
         <activity android:name=".AnalyzeActivity" />
         <activity android:name=".SearchActivity" />
+        <activity
+            android:name=".CustomCaptureActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar" />
 
 
         <receiver
