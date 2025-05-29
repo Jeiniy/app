@@ -1,7 +1,6 @@
 package com.example.smartfridgeassistant
 
 // 🔸 1. 匯入相關套件
-import android.app.DatePickerDialog
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -13,8 +12,6 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.finalproject.Food
-import com.google.android.material.datepicker.MaterialDatePicker
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
@@ -22,7 +19,7 @@ import java.util.*
 class SearchActivity : AppCompatActivity() {
 
     // 🔸 2. 宣告變數
-    private lateinit var adapter: SearchResultAdapter
+    private lateinit var adapter: SearchAdapter
     private var foodList: List<FoodItem> = emptyList()
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
@@ -69,7 +66,7 @@ class SearchActivity : AppCompatActivity() {
         })
 
         // 🔸 7. 設定 RecyclerView 和資料來源
-        adapter = SearchResultAdapter()
+        adapter = SearchAdapter()
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
 

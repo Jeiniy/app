@@ -5,10 +5,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.finalproject.Food
 
 // 🔸 用來顯示搜尋結果的 RecyclerView Adapter
-class SearchResultAdapter : RecyclerView.Adapter<SearchResultAdapter.ViewHolder>() {
+class SearchAdapter : RecyclerView.Adapter<SearchAdapter.ViewHolder>() {
 
     // ✅ 1. 食材資料清單（會由外部更新）
     private var foods = listOf<FoodItem>()
