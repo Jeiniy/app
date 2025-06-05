@@ -26,6 +26,21 @@
             android:padding="16dp">
 
             <!-- 一、設定提醒時間 -->
+
+            <EditText
+                android:id="@+id/editTextText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="請輸入欲提醒的食材"
+                android:inputType="text" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/selected_food_list"
+                android:layout_width="381dp"
+                android:layout_height="371dp" />
+
+
             <TextView
                 android:id="@+id/text_reminder_time"
                 android:layout_width="wrap_content"
@@ -49,19 +64,21 @@
                     android:id="@+id/radio_week_before"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="一個禮拜前" />
+                    android:text="前一個禮拜" />
 
                 <RadioButton
                     android:id="@+id/radio_day_before"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="1天前" />
+                    android:text="前1天" />
 
                 <RadioButton
                     android:id="@+id/radio_same_day"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="當日" />
+                    android:text="當天" />
+
+
             </RadioGroup>
 
         </LinearLayout>
